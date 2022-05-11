@@ -60,7 +60,7 @@ typedef enum __STD_TEXT_ATTRIBUTE_TYPE
 void initConsole();
 /** @brief Set the title of the console. **/
 void setTitle(const char* title);
-/** @brief Set if the cursor is visible. **/
+/** @brief Set the cursor's visibility. **/
 void setCursorVisible(BOOL visible);
 /** @brief Get cursor, which will be set to (x, y). **/
 CConsole getCursor(SHORT x, SHORT y);
@@ -76,10 +76,16 @@ void setTextColor(StdColor col);
 void setTextBackgroundColor(StdColor col);
 void setTextAttribute(StdColor textColor, StdColor bgColor);
 /** 
-* @brief Reset Text Color and Background Color to default. (Text = Light Gray; Background = Black)
-* @param attri Attribute to be reset.
+ * @brief Reset Text Color and Background Color to default. (Text = Light Gray; Background = Black)
+ * @param attri Attribute to be reset.
 **/
 void resetTextAttribute(TextAttributeType attri);
+
+/**
+ * @brief Pause until user hit a keyboard key.
+ * @param tip Tooltip to show when paused.
+**/
+void pauseConsole(const char* tip);
 
 #ifdef __cplusplus
 }

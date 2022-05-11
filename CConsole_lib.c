@@ -49,6 +49,21 @@ void resetTextAttribute(TextAttributeType attri)
 	}
 }
 
+void pauseConsole(const char* tip)
+{
+#ifndef _MSC_VER
+	if (tip) printf("%s", tip);
+#else
+	if (tip) printf_s("%s", tip);
+#endif
+	while (!_kbhit());	// pause
+#ifndef _MSC_VER
+	if (tip) printf("\n");
+#else
+	if (tip) printf_s("\n");
+#endif
+}
+
 
 #ifdef __cplusplus
 }
