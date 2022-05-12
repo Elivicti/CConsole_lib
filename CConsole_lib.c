@@ -8,6 +8,8 @@ extern "C" {
 #include <conio.h>
 
 HANDLE hStdConsole = NULL;
+StdColor txt = LightGray;	// current text color
+StdColor bg = Black;		// current background color
 
 void initConsole() { hStdConsole = GetStdHandle(STD_OUTPUT_HANDLE); }
 void setTitle(const char* title) { SetConsoleTitle(title); }
@@ -30,9 +32,9 @@ void setConsoleCursor(CConsole* cursor)
 	SetConsoleCursorPosition(hStdConsole, c);
 }
 
-void setTextColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, col); }
-void setTextBackgroundColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, col << 4); }
-void setTextAttribute(StdColor textColor, StdColor bgColor) { SetConsoleTextAttribute(hStdConsole, textColor | (bgColor << 4)); }
+void setTextColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, txt = col); }
+void setTextBackgroundColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, bg = (col << 4)); }
+void setTextAttribute(StdColor textColor, StdColor bgColor) { SetConsoleTextAttribute(hStdConsole, (txt = textColor) | (bg = (bgColor << 4))); }
 void resetTextAttribute(TextAttributeType attri)
 {
 	switch (attri)
@@ -41,10 +43,10 @@ void resetTextAttribute(TextAttributeType attri)
 		SetConsoleTextAttribute(hStdConsole, LightGray | (Black << 4));
 		break;
 	case TextColor:
-		SetConsoleTextAttribute(hStdConsole, LightGray);
+		SetConsoleTextAttribute(hStdConsole, LightGray | bg);
 		break;
 	case BackgroundColor:
-		SetConsoleTextAttribute(hStdConsole, Black << 4);
+		SetConsoleTextAttribute(hStdConsole, txt | (Black << 4));
 		break;
 	}
 }
