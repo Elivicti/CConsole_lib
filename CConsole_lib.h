@@ -1,9 +1,9 @@
 #ifndef __C_CONCOLE_LIB_HEADER___
 #define __C_CONCOLE_LIB_HEADER___
 
-// #if !defined(__WIN32__)
-// #error "CConsole Lib only works on Windows."
-// #endif
+#if !defined(_WIN32)
+#error "CConsole Lib only works on Windows."
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,23 +56,50 @@ typedef enum __STD_TEXT_ATTRIBUTE_TYPE
 	BackgroundColor	= 0b10
 } TextAttributeType;
 
-/** @brief Init console handle, must be called before other functions are called. **/
+typedef enum __STD_KEY_TYPE
+{
+	ESC		= VK_ESCAPE,
+	TAB		= VK_TAB,
+	CAP		= VK_CAPITAL,
+	Space	= VK_SPACE,
+	// SHIFT
+	Shift	= VK_SHIFT,
+	LShift	= VK_LSHIFT,
+	Rshift	= VK_RSHIFT,
+	// ALT
+	Alt		= VK_MENU,
+	LAlt	= VK_LMENU,
+	RAlt	= VK_RMENU,
+	// CTRL
+	Ctrl	= VK_CONTROL,
+	LCtrl	= VK_LCONTROL,
+	RCtrl	= VK_RCONTROL,
+	// Directions
+	Up		= VK_UP,
+	Down	= VK_DOWN,
+	Left	= VK_LEFT,
+	Right	= VK_RIGHT
+} KeyType;
+
+/** @brief Init console handle, must be called before other functions are called. */
 void initConsole();
-/** @brief Set the title of the console. **/
+/** @brief Set the title of the console. */
 void setTitle(const char* title);
-/** @brief Set the cursor's visibility. **/
+/** @brief Set the cursor's visibility. */
 void setCursorVisible(BOOL visible);
-/** @brief Get cursor, which will be set to (x, y). **/
+/** @brief Get cursor, which will be set to (x, y). */
 CConsole getCursor(SHORT x, SHORT y);
 
-/** @brief Set Cursor Position to (x, y). **/
+/** @brief Set Cursor Position to (x, y). */
 void setCursor(CConsole* cursor, SHORT x, SHORT y);
-/** @brief Set Cursor Position to (cursor.x + dx, cursor.y + dy). **/
+/** @brief Set Cursor Position to (cursor.x + dx, cursor.y + dy). */
 void moveCursor(CConsole* cursor, SHORT dx, SHORT dy);
-/** @brief Set the console cursor position. @param cursor Cursor position to be set.**/
+/** @brief Set the console cursor position. @param cursor Cursor position to be set. */
 void setConsoleCursor(CConsole* cursor);
 
+/** @brief Set color of all the text behind this function. */
 void setTextColor(StdColor col);
+/** @brief Set color of all text background behind this function. */
 void setTextBackgroundColor(StdColor col);
 void setTextAttribute(StdColor textColor, StdColor bgColor);
 /** 
@@ -86,6 +113,27 @@ void resetTextAttribute(TextAttributeType attri);
  * @param tip Tooltip to show when paused.
 **/
 void pauseConsole(const char* tip);
+
+/**
+ * @brief Checks if the character key is pressed. 
+ * @param ch ASCII value of the key.
+**/
+BOOL isCharKeyPressed(char ch);
+/**
+ * @brief Checks if the key is pressed. 
+ * @param key Only KeyType values and VK_ macros are supported.
+**/
+BOOL isKeyPressed(KeyType key);
+/**
+ * @brief Checks if the key is toggled. 
+ * @param key Only KeyType values and VK_ macros are supported.
+**/
+BOOL isKeyToggled(KeyType key);
+/**
+ * @brief  Return the value of pressed key.
+ * @return ASCII value if pressed a character key, KeyType value if pressed other key.
+**/
+int getPressedKey();
 
 #ifdef __cplusplus
 }

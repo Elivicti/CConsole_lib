@@ -4,10 +4,15 @@
 #include "../CConsole.h"
 #include <conio.h>
 
-
 int main()
 {
 	initConsole();
-	pauseConsole("Press Any Key to Continue...");
+	printf("Program Running...\n");
+	while (1)
+	{
+		printf("%d\n", isCharKeyPressed('h'));
+		Sleep(500);
+	}
+	printf("\nProgram Exited.\n");
 	return 0;
 }

@@ -63,7 +63,27 @@ void pauseConsole(const char* tip)
 	if (tip) printf_s("\n");
 #endif
 }
-
+BOOL isCharKeyPressed(char ch)
+{
+	if (_kbhit()) 
+		return ch == _getch();
+}
+BOOL isKeyPressed(KeyType key) { return (GetKeyState(key) & 0x8000); }
+BOOL isKeyToggled(KeyType key) { return (GetKeyState(key) & 0x01); }
+int getPressedKey()
+{
+	static SHORT keys[] = {ESC, TAB, CAP, Space, LShift, Rshift, LAlt, RAlt, LCtrl, RCtrl, Up, Down, Left, Right};
+	BOOL vk_flag = FALSE;
+	int i = 0;
+	while (TRUE)
+	{
+		for (i = 0; (i < 14) && !vk_flag; vk_flag = isKeyPressed(keys[i]), i++);
+		if (vk_flag)
+			return keys[i - 1];
+		if (_kbhit())
+			return _getch();
+	}
+}
 
 #ifdef __cplusplus
 }
