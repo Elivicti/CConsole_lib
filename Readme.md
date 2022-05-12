@@ -27,7 +27,7 @@ And it's also my final homework of C language class.
    `build.bat` also provide a convenient functionality to run a quick test.
 
    + `.\build.bat test` will build and compile source file under `.\test`
-   + `.\build.bat test` will build, compile source file under `.\test`, and run `test.exe`
+   + `.\build.bat test -r` will build, compile source file under `.\test`, and run `test.exe`
    
    Or use `gcc` compiler and `ar` command.
    
