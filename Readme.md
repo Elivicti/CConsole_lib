@@ -61,7 +61,7 @@ There are mainly two ways to use this library in your program.
 
 2.  Use `CConsole_lib.h`
 
-   Put `CConsole_lib.h` and `CConsole.lib` in your source's folder, then include `CConsole_lib.h` in your program. Use `#pragma comment(lib,"CConsole.lib")` to link `.lib` file to your program.
+   Put `CConsole_lib.h` and `CConsole.lib` in your source folder, then include `CConsole_lib.h` in your program. Use `#pragma comment(lib,"CConsole.lib")` to link `.lib` file to your program.
 
    ```c
    #include <stdio.h>
