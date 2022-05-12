@@ -44,7 +44,7 @@ There are mainly two ways to use this library in your program.
 
 1. Use `CConsole.h`
 
-   Put `CConsole.h`, `CConsole_lib.h` and `CConsole.lib` in your source's folder, then simply include `CConsole.h` in your program.
+   Put `CConsole.h`, `CConsole_lib.h` and `CConsole.lib` in your source folder, then simply include `CConsole.h` in your program.
 
    ```c
    #include <stdio.h>
