@@ -61,21 +61,21 @@ There are mainly two ways to use this library in your program.
 
 2.  Use `CConsole_lib.h`
 
-   Put `CConsole_lib.h` and `CConsole.lib` in your source folder, then include `CConsole_lib.h` in your program. Use `#pragma comment(lib,"CConsole.lib")` to link `.lib` file to your program.
+    Put `CConsole_lib.h` and `CConsole.lib` in your source folder, then include `CConsole_lib.h` in your program. Use `#pragma comment(lib,"CConsole.lib")` to link `.lib` file to your program.
 
-   ```c
-   #include <stdio.h>
-   #include "CConsole_lib.h"
-   #pragma comment(lib,"CConsole.lib")
-   int main()
-   {
-       initConsole();                   // must be called before all other CConsole functions are called
-       setTextColor(Red);               // set text color to red
-       printf("Hello CConsole!\n");
-       resetTextAttribute(TextColor);   // reset text color to default
-       return 0;
-   }
-   ```
+    ```c
+    #include <stdio.h>
+    #include "CConsole_lib.h"
+    #pragma comment(lib,"CConsole.lib")
+    int main()
+    {
+        initConsole();                   // must be called before all other CConsole functions are called
+        setTextColor(Red);               // set text color to red
+        printf("Hello CConsole!\n");
+        resetTextAttribute(TextColor);   // reset text color to default
+        return 0;
+    }
+    ```
 
 
 Note that all methods above have some issues when using `gcc` command line to compile. You may need to refer to the following command.
