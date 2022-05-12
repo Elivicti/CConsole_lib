@@ -48,13 +48,13 @@ There are mainly two ways to use this library in your program.
 
    ```c
    #include <stdio.h>
-   #include "CConsole.h"				// just include here
+   #include "CConsole.h"                // just include here
    int main()
    {
-       initConsole();					// must be called before all other CConsole functions are called
-       setTextColor(Red);				// set text color to red
+       initConsole();                   // must be called before all other CConsole functions are called
+       setTextColor(Red);               // set text color to red
        printf("Hello CConsole!\n");
-       resetTextAttribute(TextColor);	// reset text color to default
+       resetTextAttribute(TextColor);   // reset text color to default
        return 0;
    }
    ```
@@ -69,10 +69,10 @@ There are mainly two ways to use this library in your program.
    #pragma comment(lib,"CConsole.lib")
    int main()
    {
-       initConsole();					// must be called before all other CConsole functions are called
-       setTextColor(Red);				// set text color to red
+       initConsole();                   // must be called before all other CConsole functions are called
+       setTextColor(Red);               // set text color to red
        printf("Hello CConsole!\n");
-       resetTextAttribute(TextColor);	// reset text color to default
+       resetTextAttribute(TextColor);   // reset text color to default
        return 0;
    }
    ```
