@@ -6,6 +6,9 @@ extern "C" {
 
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
+
+#define CLEAR_BUFF {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
 
 HANDLE hStdConsole = NULL;
 StdColor txt = LightGray;	// current text color
@@ -18,17 +21,32 @@ void setCursorVisible(BOOL visible)
 	CONSOLE_CURSOR_INFO cursor_info = {1, visible};
 	SetConsoleCursorInfo(hStdConsole, &cursor_info);
 }
-CConsole getCursor(SHORT x, SHORT y) 
+
+CursorAnchor getCursorAnchor(SHORT x, SHORT y) 
 {
-	CConsole ret = {x, y};
+	CursorAnchor ret = { x, y };
 	return ret;
 }
+void setCursorAnchor(CursorAnchor* anchor, SHORT x, SHORT y) { anchor->x = x; anchor->y = y; }
+void moveCursorAnchor(CursorAnchor* anchor, SHORT dx, SHORT dy) { anchor->x += dx; anchor->y += dy; }
 
-void setCursor(CConsole* cursor, SHORT x, SHORT y) { cursor->x = x; cursor->y = y; }
-void moveCursor(CConsole* cursor, SHORT dx, SHORT dy) { cursor->x += dx; cursor->y += dy; }
-void setConsoleCursor(CConsole* cursor)
+CursorAnchor getCursor()
 {
-	COORD c = { cursor->x, cursor->y };
+	CONSOLE_SCREEN_BUFFER_INFO screen_info;
+	GetConsoleScreenBufferInfo(hStdConsole, &screen_info);
+	CursorAnchor anchor = { screen_info.dwCursorPosition.X, screen_info.dwCursorPosition.Y };
+	return anchor;
+}
+void setCursor(CursorAnchor* anchor)
+{
+	COORD c = { anchor->x, anchor->y };
+	SetConsoleCursorPosition(hStdConsole, c);
+}
+void moveCursor(SHORT dx, SHORT dy)
+{
+	CONSOLE_SCREEN_BUFFER_INFO screen_info;
+	GetConsoleScreenBufferInfo(hStdConsole, &screen_info);
+	COORD c = { screen_info.dwCursorPosition.X + dx, screen_info.dwCursorPosition.Y + dy };
 	SetConsoleCursorPosition(hStdConsole, c);
 }
 
@@ -84,6 +102,91 @@ int getPressedKey()
 			return keys[i - 1];
 		if (_kbhit())
 			return _getch();
+	}
+}
+
+TxtUi* readTextUi(const char* filepath)
+{
+	TxtUi* ui = (TxtUi*)malloc(sizeof(TxtUi));
+	FILE* fp = fopen(filepath, "rt");
+	if (fp == NULL)
+	{
+		perror("Failed to open file.");
+		return NULL;
+	}
+
+	// Read and preprocess data
+	fseek(fp, 0, SEEK_END);
+	long fsize = ftell(fp);
+	BYTE* fdata = (BYTE*)malloc(sizeof(BYTE) * (fsize + 1));
+	rewind(fp);
+	fread(fdata, sizeof(char), fsize, fp);
+	fdata[fsize] = '\0';								// Append '\0' to make a usable string
+	fdata[fsize - 1] *= (fdata[fsize - 1] != '\n');		// Ignore '\n' at the end
+	
+	// Calculate line count
+	ui->height = 1;
+	for (int i = 0; i < fsize; i++)
+		ui->height += (fdata[i] == '\n');
+
+	ui->data = (BYTE**)malloc(sizeof(BYTE*) * ui->height);
+	
+	// Split file data into lines
+	BYTE* line = strtok(fdata, "\n");	// Because of here, the processed data does not contain '\n'
+	ui->width = 0;
+	for (int i = 0; i < ui->height && line != NULL; i++)
+	{
+		size_t len = strlen(line);
+		if (len > ui->width)			// Only save the length of the longest line
+			ui->width = len;
+
+		ui->data[i] = (char*)malloc(sizeof(char) * (len + 1));
+		strcpy(ui->data[i], line);
+		line = strtok(NULL, "\n");		// Because of here, the processed data does not contain '\n'
+	}
+
+	free(fdata);
+	fclose(fp);
+
+	return ui;
+}
+BOOL saveTextUi(TxtUi* ui, const char* filepath)
+{
+	FILE* fp = fopen(filepath, "wt+");
+	if (fp == NULL)
+	{
+		perror("Failed to open file.");
+		return FALSE;
+	}
+
+	for (int i = 0; i < ui->height; i++)
+	{
+		fwrite(ui->data[i], sizeof(BYTE), strlen(ui->data[i]), fp);
+		fwrite("\n", sizeof(char), strlen("\n"), fp);
+	}
+	
+	fclose(fp);
+	return TRUE;
+}
+void printUi(TxtUi* ui, CursorAnchor* anchor)
+{
+	setCursor(anchor);
+	for (int i = 0; i < ui->height; i++)
+	{
+		printf("%s", ui->data[i]);
+		moveCursor(0, 1);
+	}
+}
+void deleteTextUi(TxtUi* ui)
+{
+	if (ui != NULL)
+	{
+		for (int i = 0; i < ui->height; i++)
+			free(ui->data[i]);
+		free(ui->data);
+		ui->data   = NULL;
+		ui->height = 0;
+		ui->width  = 0;
 	}
 }
 

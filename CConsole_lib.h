@@ -11,16 +11,17 @@ extern "C" {
 
 #include <Windows.h>
 
-typedef struct __C_Console_Cursor_Instance
+/** @brief Cursor anchor. Defines the coordinate of the console cursor */
+typedef struct __C_Console_Cursor_Anchor_Instance
 {
 	SHORT x;	// Cursor x
 	SHORT y;	// Cursor y
 
 #ifdef __cplusplus
-	__C_Console_Cursor_Instance() : x(0), y(0) {}
-	__C_Console_Cursor_Instance(SHORT _x, SHORT _y) : x(_x), y(_y) {}
+	__C_Console_Cursor_Anchor_Instance() : x(0), y(0) {}
+	__C_Console_Cursor_Anchor_Instance(SHORT _x, SHORT _y) : x(_x), y(_y) {}
 #endif
-} CConsole;
+} CursorAnchor;
 
 typedef enum __STD_DEVICE_HANDLE_ENUM_TYPE
 {
@@ -87,15 +88,20 @@ void initConsole();
 void setTitle(const char* title);
 /** @brief Set the cursor's visibility. */
 void setCursorVisible(BOOL visible);
-/** @brief Get cursor, which will be set to (x, y). */
-CConsole getCursor(SHORT x, SHORT y);
 
-/** @brief Set Cursor Position to (x, y). */
-void setCursor(CConsole* cursor, SHORT x, SHORT y);
-/** @brief Set Cursor Position to (cursor.x + dx, cursor.y + dy). */
-void moveCursor(CConsole* cursor, SHORT dx, SHORT dy);
-/** @brief Set the console cursor position. @param cursor Cursor position to be set. */
-void setConsoleCursor(CConsole* cursor);
+/** @brief Get cursor anchor, which will be set to (x, y). */
+CursorAnchor getCursorAnchor(SHORT x, SHORT y);
+/** @brief Set anchor position to (x, y). */
+void setCursorAnchor(CursorAnchor* anchor, SHORT x, SHORT y);
+/** @brief Set anchor position to (anchor.x + dx, anchor.y + dy). */
+void moveCursorAnchor(CursorAnchor* anchor, SHORT dx, SHORT dy);
+
+/** @brief Get current console cursor position. */
+CursorAnchor getCursor();
+/** @brief Set the console cursor position. @param anchor Set the cursor to where anchor is. */
+void setCursor(CursorAnchor* anchor);
+/** @brief Move the console cursor position. @param dx Horizontal direction. @param dy Vertical direction.  */
+void moveCursor(SHORT dx, SHORT dy);
 
 /** @brief Set color of all the text behind this function. */
 void setTextColor(StdColor col);
@@ -134,6 +140,42 @@ BOOL isKeyToggled(KeyType key);
  * @return ASCII value if pressed a character key, KeyType value if pressed other key.
 **/
 int getPressedKey();
+
+/**  @brief Text Ui instance. See README.md for more */
+typedef struct __ASCII_SIMPLE_TEXT_UI
+{
+	BYTE**	data;
+	DWORD	width;
+	DWORD	height;
+
+#ifdef __cpluscplus
+	__ASCII_SIMPLE_TEXT_UI() : data(nullptr), width(0), height(0) {}
+#endif
+} TxtUi;
+
+/**
+ * @brief Read from text file.
+ * @param filepath Path to the text file.
+ * @return If failed to read, return NULL.
+**/
+TxtUi* readTextUi(const char* filepath);
+/**
+ * @brief Save TxtUi to a text file. Will overwrite existing file.
+ * @param ui Text Ui data to be saved.
+ * @param filepath Where you want to save the data. If file does not exist, create the file.
+ * @return Whether the save is successful.
+**/
+BOOL saveTextUi(TxtUi* ui, const char* filepath);
+/**
+ * @brief Print loaded ui to the console.
+ * @param ui TxtUi to be printed.
+ * @param anchor Console coordinate where print begins. If NULL, print begins at the upper left of the console.
+**/
+void printUi(TxtUi* ui, CursorAnchor* anchor);
+/**
+ * @brief Free memory and set the pointer to NULL.
+**/
+void deleteTextUi(TxtUi* ui);
 
 #ifdef __cplusplus
 }

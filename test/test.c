@@ -4,15 +4,22 @@
 #include "../CConsole.h"
 #include <conio.h>
 
+#include <stdarg.h>
+
+#include <string.h>
 int main()
 {
-	initConsole();
-	printf("Program Running...\n");
-	while (1)
-	{
-		printf("%d\n", isCharKeyPressed('h'));
-		Sleep(500);
-	}
-	printf("\nProgram Exited.\n");
+	moveCursor(1, 0);
+	printf("aa");
 	return 0;
 }
+
+// int main()
+// {
+// 	initConsole();
+// 	printf("Program Running...\n");
+// 	myprint("Hello World! %5d %d", 5, 15);
+
+// 	printf("\nProgram Exited.\n");
+// 	return 0;
+// }
