@@ -7,8 +7,10 @@ extern "C" {
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
-#define CLEAR_BUFF {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
+#define CLEAR_BUFF() {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
+#define PERR(bSuccess, api)  {if (!(bSuccess)) printf("%s:Error %d from %s on line %d\n", __FILE__, GetLastError(), api, __LINE__);}
 
 HANDLE hStdConsole = NULL;
 StdColor txt = LightGray;	// current text color
@@ -21,8 +23,25 @@ void setCursorVisible(BOOL visible)
 	CONSOLE_CURSOR_INFO cursor_info = {1, visible};
 	SetConsoleCursorInfo(hStdConsole, &cursor_info);
 }
+void clearConsole()
+{
+	COORD coordScreen = { 0, 0 };			// Coordinate of upper left
+	BOOL bSuccess;
+	DWORD cCharsWritten;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;		// Screen buffer
+	DWORD dwConSize;						// Buffer size
+	bSuccess = GetConsoleScreenBufferInfo(hStdConsole, &csbi);
+	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+	// Fill buffer with blank
+	bSuccess = FillConsoleOutputCharacter(hStdConsole, (TCHAR)' ', dwConSize, coordScreen, &cCharsWritten);
+	bSuccess = GetConsoleScreenBufferInfo(hStdConsole, &csbi);
+	// Fill console screen
+	bSuccess = FillConsoleOutputAttribute(hStdConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+	// Set cursor position
+	bSuccess = SetConsoleCursorPosition(hStdConsole, coordScreen);
+}
 
-CursorAnchor getCursorAnchor(SHORT x, SHORT y) 
+CursorAnchor createCursorAnchor(SHORT x, SHORT y) 
 {
 	CursorAnchor ret = { x, y };
 	return ret;
@@ -71,17 +90,10 @@ void resetTextAttribute(TextAttributeType attri)
 
 void pauseConsole(const char* tip)
 {
-#ifndef _MSC_VER
 	if (tip) printf("%s", tip);
-#else
-	if (tip) printf_s("%s", tip);
-#endif
-	while (!_kbhit());	// pause
-#ifndef _MSC_VER
+	while (!_kbhit());	// Pause
+	CLEAR_BUFF();
 	if (tip) printf("\n");
-#else
-	if (tip) printf_s("\n");
-#endif
 }
 BOOL isCharKeyPressed(char ch)
 {
@@ -105,9 +117,9 @@ int getPressedKey()
 	}
 }
 
-TxtUi* readTextUi(const char* filepath)
+TextUi* readTextUi(const char* filepath)
 {
-	TxtUi* ui = (TxtUi*)malloc(sizeof(TxtUi));
+	TextUi* ui = (TextUi*)malloc(sizeof(TextUi));
 	FILE* fp = fopen(filepath, "rt");
 	if (fp == NULL)
 	{
@@ -120,7 +132,7 @@ TxtUi* readTextUi(const char* filepath)
 	long fsize = ftell(fp);
 	BYTE* fdata = (BYTE*)malloc(sizeof(BYTE) * (fsize + 1));
 	rewind(fp);
-	fread(fdata, sizeof(char), fsize, fp);
+	fread(fdata, sizeof(BYTE), fsize, fp);
 	fdata[fsize] = '\0';								// Append '\0' to make a usable string
 	fdata[fsize - 1] *= (fdata[fsize - 1] != '\n');		// Ignore '\n' at the end
 	
@@ -137,10 +149,10 @@ TxtUi* readTextUi(const char* filepath)
 	for (int i = 0; i < ui->height && line != NULL; i++)
 	{
 		size_t len = strlen(line);
-		if (len > ui->width)			// Only save the length of the longest line
+		if (len > ui->width)			// Only save the length of the longest line ('\0' not included)
 			ui->width = len;
 
-		ui->data[i] = (char*)malloc(sizeof(char) * (len + 1));
+		ui->data[i] = (BYTE*)malloc(sizeof(BYTE) * (len + 1));
 		strcpy(ui->data[i], line);
 		line = strtok(NULL, "\n");		// Because of here, the processed data does not contain '\n'
 	}
@@ -150,7 +162,7 @@ TxtUi* readTextUi(const char* filepath)
 
 	return ui;
 }
-BOOL saveTextUi(TxtUi* ui, const char* filepath)
+BOOL saveTextUi(TextUi* ui, const char* filepath)
 {
 	FILE* fp = fopen(filepath, "wt+");
 	if (fp == NULL)
@@ -168,16 +180,16 @@ BOOL saveTextUi(TxtUi* ui, const char* filepath)
 	fclose(fp);
 	return TRUE;
 }
-void printUi(TxtUi* ui, CursorAnchor* anchor)
+void drawTextUi(TextUi* ui, CursorAnchor* anchor)
 {
-	setCursor(anchor);
 	for (int i = 0; i < ui->height; i++)
 	{
+		setCursor(anchor);
+		moveCursor(0, i);
 		printf("%s", ui->data[i]);
-		moveCursor(0, 1);
 	}
 }
-void deleteTextUi(TxtUi* ui)
+void deleteTextUi(TextUi* ui)
 {
 	if (ui != NULL)
 	{

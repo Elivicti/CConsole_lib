@@ -88,9 +88,11 @@ void initConsole();
 void setTitle(const char* title);
 /** @brief Set the cursor's visibility. */
 void setCursorVisible(BOOL visible);
+/** @brief Clear console and reset cursor to the upper left. */
+void clearConsole();
 
 /** @brief Get cursor anchor, which will be set to (x, y). */
-CursorAnchor getCursorAnchor(SHORT x, SHORT y);
+CursorAnchor createCursorAnchor(SHORT x, SHORT y);
 /** @brief Set anchor position to (x, y). */
 void setCursorAnchor(CursorAnchor* anchor, SHORT x, SHORT y);
 /** @brief Set anchor position to (anchor.x + dx, anchor.y + dy). */
@@ -151,31 +153,29 @@ typedef struct __ASCII_SIMPLE_TEXT_UI
 #ifdef __cpluscplus
 	__ASCII_SIMPLE_TEXT_UI() : data(nullptr), width(0), height(0) {}
 #endif
-} TxtUi;
+} TextUi;
 
 /**
  * @brief Read from text file.
  * @param filepath Path to the text file.
  * @return If failed to read, return NULL.
 **/
-TxtUi* readTextUi(const char* filepath);
+TextUi* readTextUi(const char* filepath);
 /**
- * @brief Save TxtUi to a text file. Will overwrite existing file.
+ * @brief Save TextUi to a text file. Will overwrite existing file.
  * @param ui Text Ui data to be saved.
  * @param filepath Where you want to save the data. If file does not exist, create the file.
  * @return Whether the save is successful.
 **/
-BOOL saveTextUi(TxtUi* ui, const char* filepath);
+BOOL saveTextUi(TextUi* ui, const char* filepath);
 /**
  * @brief Print loaded ui to the console.
- * @param ui TxtUi to be printed.
+ * @param ui TextUi to be printed.
  * @param anchor Console coordinate where print begins. If NULL, print begins at the upper left of the console.
 **/
-void printUi(TxtUi* ui, CursorAnchor* anchor);
-/**
- * @brief Free memory and set the pointer to NULL.
-**/
-void deleteTextUi(TxtUi* ui);
+void drawTextUi(TextUi* ui, CursorAnchor* anchor);
+/** @brief Free memory and set the data pointer to NULL. */
+void deleteTextUi(TextUi* ui);
 
 #ifdef __cplusplus
 }
