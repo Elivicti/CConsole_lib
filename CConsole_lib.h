@@ -109,6 +109,7 @@ void moveCursor(SHORT dx, SHORT dy);
 void setTextColor(StdColor col);
 /** @brief Set color of all text background behind this function. */
 void setTextBackgroundColor(StdColor col);
+/** @brief Set color of text and background. */
 void setTextAttribute(StdColor textColor, StdColor bgColor);
 /** 
  * @brief Reset Text Color and Background Color to default. (Text = Light Gray; Background = Black)

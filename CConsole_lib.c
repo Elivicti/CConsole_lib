@@ -92,7 +92,7 @@ void pauseConsole(const char* tip)
 {
 	if (tip) printf("%s", tip);
 	while (!_kbhit());	// Pause
-	CLEAR_BUFF();
+	// CLEAR_BUFF();
 	if (tip) printf("\n");
 }
 BOOL isCharKeyPressed(char ch)
