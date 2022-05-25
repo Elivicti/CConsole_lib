@@ -222,7 +222,7 @@ Option `-l` is used to specify `.lib` file, `-L` is used to specify the path con
   BOOL isCharKeyPressed(char ch)
   ```
 
-  Returns if `ASCII` value key is pressed.
+  Returns if character key (`ASCII` value) is pressed.
 
   This function will NOT wait for user input.
 
@@ -258,11 +258,11 @@ Option `-l` is used to specify `.lib` file, `-L` is used to specify the path con
 
   Defines the attribute type. Used in `resetTextAttribute()`.
 
-  |      Name       |             Value             |     Attribute      |
-  | :-------------: | :---------------------------: | :----------------: |
-  |       All       | `TextColor | BackgroundColor` | All Text Attribute |
-  |    TextColor    |            `0b01`             |     Text Color     |
-  | BackgroundColor |            `0b10`             |  Background Color  |
+  |      Name       |             Value              |     Attribute      |
+  | :-------------: | :----------------------------: | :----------------: |
+  |       All       | `TextColor \| BackgroundColor` | All Text Attribute |
+  |    TextColor    |             `0b01`             |     Text Color     |
+  | BackgroundColor |             `0b10`             |  Background Color  |
 
 + ```c
   typedef enum __STD_CONSOLE_COLOR StdColor
