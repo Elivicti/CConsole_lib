@@ -15,6 +15,8 @@ rm CConsole_lib.o
 if "%1" == "test" (
 	gcc -std=c11 .\test\test.c -l:CConsole.lib -L.\build -o .\test\test.exe
 	if "%2" == "-r" (
-		.\test\test.exe
+		cd .\test\
+		.\test.exe
+		cd ..
 	)
 )
