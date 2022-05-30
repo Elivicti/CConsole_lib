@@ -7,7 +7,8 @@ extern "C" {
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
-#include <stdarg.h>
+#include <ctype.h>
+// #include <stdarg.h>
 
 #define CLEAR_BUFF() {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
 #define PERR(bSuccess, api)  {if (!(bSuccess)) printf("%s:Error %d from %s on line %d\n", __FILE__, GetLastError(), api, __LINE__);}
@@ -15,6 +16,36 @@ extern "C" {
 HANDLE hStdConsole = NULL;
 StdColor txt = LightGray;	// current text color
 StdColor bg = Black;		// current background color
+CursorAnchor UPPER_LEFT = { 0, 0 };
+
+BYTE** alloc2dBYTE(DWORD rowCnt, DWORD rowSize)
+{
+	BYTE** ret = (BYTE**)malloc(sizeof(BYTE*) * rowCnt);
+	for (int i = 0; i < rowCnt; i++)
+	{
+		ret[i] = (BYTE*)malloc(sizeof(BYTE) * rowSize);
+		memset(ret[i], 0, rowSize);
+	}
+	return ret;
+}
+
+BYTE** copy2dBYTE(BYTE** data, DWORD rowCnt, DWORD rowSize)
+{
+	BYTE** ret = (BYTE**)malloc(sizeof(BYTE*) * rowCnt);
+	for (int i = 0; i < rowCnt; i++)
+	{
+		ret[i] = (BYTE*)malloc(sizeof(BYTE) * rowSize);
+		memcpy(ret[i], data[i], rowSize);
+	}
+	return ret;
+}
+
+void free2dBYTE(BYTE** data, DWORD rowCnt)
+{
+	for (int i = 0; i < rowCnt; i++)
+		free(data[i]);
+	free(data);
+}
 
 void initConsole() { hStdConsole = GetStdHandle(STD_OUTPUT_HANDLE); }
 void setTitle(const char* title) { SetConsoleTitle(title); }
@@ -117,6 +148,13 @@ int getPressedKey()
 	}
 }
 
+
+void cleanTextUiData(TextUi* ui)
+{
+	for (int i = 0; i < ui->height; i++)
+		for (int j = 0; j < ui->width && !ui->data[i][j]; ui->data[i][j] = ' ', j++);
+}
+
 TextUi* readTextUi(const char* filepath)
 {
 	TextUi* ui = (TextUi*)malloc(sizeof(TextUi));
@@ -162,6 +200,24 @@ TextUi* readTextUi(const char* filepath)
 
 	return ui;
 }
+
+TextUi* copyTextUi(const TextUi* ui)
+{
+	if (ui != NULL && ui->data != NULL)
+	{
+		TextUi* cp = (TextUi*)malloc(sizeof(TextUi));
+		cp->data = (BYTE**)malloc(sizeof(BYTE*) * ui->height);
+		for (int i = 0; i < ui->height; i++)
+		{
+			cp->data[i] = (BYTE*)malloc(sizeof(BYTE) * (strlen(ui->data[i]) + 1));
+			strcpy(cp->data[i], ui->data[i]);
+		}
+		return cp;
+	}
+	else
+		return NULL;
+}
+
 BOOL saveTextUi(TextUi* ui, const char* filepath)
 {
 	FILE* fp = fopen(filepath, "wt+");
@@ -180,25 +236,146 @@ BOOL saveTextUi(TextUi* ui, const char* filepath)
 	fclose(fp);
 	return TRUE;
 }
-void drawTextUi(TextUi* ui, CursorAnchor* anchor)
+void drawTextUi(const TextUi* ui, CursorAnchor* anchor)
 {
+	CursorAnchor* p_anchor = (anchor ? anchor : &UPPER_LEFT);
 	for (int i = 0; i < ui->height; i++)
 	{
-		setCursor(anchor);
+		setCursor(p_anchor);
 		moveCursor(0, i);
 		printf("%s", ui->data[i]);
+	}
+}
+TextUi* rotateTextUi(TextUi* ui, BOOL clockwise)
+{
+	BYTE** newdata = (BYTE**)malloc(sizeof(BYTE*) * ui->width);
+	for (int i = 0; i < ui->width; i++)
+	{
+		newdata[i] = (BYTE*)malloc(sizeof(BYTE) * (ui->height + 1));
+		memset(newdata[i], 0, ui->height + 1);	// do not forget '\0'
+	}
+	if (clockwise)
+	{
+		for (int i = 0; i < ui->height; i++)
+		{
+			int linelen = strlen(ui->data[i]);
+			for (int j = 0; j < linelen; j++)
+				newdata[j][ui->height - i - 1] = ui->data[i][j];
+		}
+	}
+	else
+	{
+		for (int i = 0; i < ui->height; i++)
+		{
+			int linelen = strlen(ui->data[i]);
+			for (int j = 0; j < linelen; j++)
+				newdata[ui->width - j - 1][i] = ui->data[i][j];
+		}
+	}
+	
+	for (int i = 0; i < ui->height; i++)
+		free(ui->data[i]);
+	free(ui->data);
+
+	ui->width  ^= ui->height;
+	ui->height ^= ui->width;
+	ui->width  ^= ui->height;
+	ui->data    = newdata;
+
+	cleanTextUiData(ui);
+	return ui;
+}
+void flipTextUi(TextUi* ui, BOOL vertical)
+{
+	if (vertical)
+	{
+		for (int i = 0; i < ui->height / 2; i++)
+		{
+			BYTE* line = ui->data[i];
+			ui->data[i] = ui->data[ui->height - i - 1];
+			ui->data[ui->height - i - 1] = line;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < ui->height; i++)
+		{
+			int slen = strlen(ui->data[i]);
+			if (slen < ui->width)
+			{
+				BYTE* newline = (BYTE*)malloc(sizeof(BYTE) * (ui->width + 1));
+				memset(newline, 0, sizeof(BYTE) * (ui->width + 1));
+				strcpy(newline, ui->data[i]);
+				free(ui->data[i]);
+				ui->data[i] = newline;
+			}
+			for (int j = 0; j < ui->width / 2; j++)
+			{
+				ui->data[i][j] ^= ui->data[i][ui->width - j - 1];
+				ui->data[i][ui->width - j - 1] ^= ui->data[i][j];
+				ui->data[i][j] ^= ui->data[i][ui->width - j - 1];
+			}
+		}
+		cleanTextUiData(ui);
 	}
 }
 void deleteTextUi(TextUi* ui)
 {
 	if (ui != NULL)
 	{
-		for (int i = 0; i < ui->height; i++)
-			free(ui->data[i]);
-		free(ui->data);
-		ui->data   = NULL;
+		free2dBYTE(ui->data, ui->height);
+		ui->data = NULL;
 		ui->height = 0;
-		ui->width  = 0;
+		ui->width = 0;
+	}
+}
+
+TextUiShape* getTextUiShape(TextUiShape* shape, TextUi* ui)
+{
+	if (ui == NULL || ui->data == NULL)
+		return NULL;
+
+	if ( shape != NULL && shape->data != NULL)
+		deleteTextUiShape(shape);
+
+	if (shape == NULL)
+		shape = (TextUiShape*)malloc(sizeof(TextUiShape));
+	
+	shape->data = (BYTE**)malloc(sizeof(BYTE*) * ui->height);
+	shape->height = ui->height;
+	shape->width = ui->width;
+	for (int i = 0; i < ui->height; i++)
+	{
+		shape->data[i] = (BYTE*)malloc(sizeof(BYTE) * ui->width);
+		memset(shape->data[i], 0, ui->width);
+		for (int j = 0; j < ui->width; j++)
+			shape->data[i][j] = (!isspace(ui->data[i][j]));
+		
+	}
+	return shape;
+}
+
+TextUiShape* copyTextUiShape(TextUiShape* shape)
+{
+	if (shape != NULL && shape->data != NULL)
+	{
+		TextUiShape* cp = (TextUiShape*)malloc(sizeof(TextUiShape));
+		cp->height = shape->height;
+		cp->width = shape->width;
+		cp->data = copy2dBYTE(shape->data, shape->height, shape->width);
+	}
+	else
+		return NULL;
+}
+
+void deleteTextUiShape(TextUiShape* shape)
+{
+	if (shape != NULL && shape->data != NULL)
+	{
+		free2dBYTE(shape->data, shape->height);
+		shape->data = NULL;
+		shape->height = 0;
+		shape->width = 0;
 	}
 }
 

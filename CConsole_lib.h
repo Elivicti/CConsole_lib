@@ -12,14 +12,14 @@ extern "C" {
 #include <Windows.h>
 
 /** @brief Cursor anchor. Defines the coordinate of the console cursor */
-typedef struct __C_Console_Cursor_Anchor_Instance
+typedef struct __C_Console_Cursor_Anchor
 {
 	SHORT x;	// Cursor x
 	SHORT y;	// Cursor y
 
 #ifdef __cplusplus
-	__C_Console_Cursor_Anchor_Instance() : x(0), y(0) {}
-	__C_Console_Cursor_Anchor_Instance(SHORT _x, SHORT _y) : x(_x), y(_y) {}
+	__C_Console_Cursor_Anchor() : x(0), y(0) {}
+	__C_Console_Cursor_Anchor(SHORT _x, SHORT _y) : x(_x), y(_y) {}
 #endif
 } CursorAnchor;
 
@@ -144,7 +144,7 @@ BOOL isKeyToggled(KeyType key);
 **/
 int getPressedKey();
 
-/**  @brief Text Ui instance. See README.md for more */
+/**  @brief Text Ui type. See README.md for more */
 typedef struct __ASCII_SIMPLE_TEXT_UI
 {
 	BYTE**	data;
@@ -156,12 +156,26 @@ typedef struct __ASCII_SIMPLE_TEXT_UI
 #endif
 } TextUi;
 
+/**  @brief Text Ui shape type. See README.md for more */
+typedef struct ___ASCII_TEXT_UI_SHAPE
+{
+	BYTE**	data;	// Ui shape, default to NULL
+	DWORD	width;
+	DWORD	height;
+
+#ifdef __cpluscplus
+	___ASCII_TEXT_UI_SHAPE() : data(nullptr), width(0), height(0) {}
+#endif
+} TextUiShape;
+
 /**
  * @brief Read from text file.
  * @param filepath Path to the text file.
  * @return If failed to read, return NULL.
 **/
 TextUi* readTextUi(const char* filepath);
+/** @brief Copy from existing TextUi */
+TextUi* copyTextUi(const TextUi* ui);
 /**
  * @brief Save TextUi to a text file. Will overwrite existing file.
  * @param ui Text Ui data to be saved.
@@ -174,9 +188,30 @@ BOOL saveTextUi(TextUi* ui, const char* filepath);
  * @param ui TextUi to be printed.
  * @param anchor Console coordinate where print begins. If NULL, print begins at the upper left of the console.
 **/
-void drawTextUi(TextUi* ui, CursorAnchor* anchor);
+void drawTextUi(const TextUi* ui, CursorAnchor* anchor);
+/** 
+ * @brief Rotate TextUi relative to its upper left.
+ * @param clockwise Whether the rotation operation is clockwise. 
+**/
+TextUi* rotateTextUi(TextUi* ui, BOOL clockwise);
+/**
+ * @brief Flip TextUi.
+ * @param vertical If FALSE, TextUi will be flipped horizontally.
+**/
+void flipTextUi(TextUi* ui, BOOL vertical);
 /** @brief Free memory and set the data pointer to NULL. */
 void deleteTextUi(TextUi* ui);
+
+/**
+ * @brief Create a TestUiShape instance from existing TextUi.
+ * @param shape If NULL, it will create a new instance, otherwise it will update existing shape.
+ * @return Created or updated shape instance.
+**/
+TextUiShape* getTextUiShape(TextUiShape* shape, TextUi* ui);
+/** @brief Copy shape data from existing shape. */
+TextUiShape* copyTextUiShape(TextUiShape* shape);
+/** @brief Free memory of TextUiShape. */
+void deleteTextUiShape(TextUiShape* shape);
 
 #ifdef __cplusplus
 }
