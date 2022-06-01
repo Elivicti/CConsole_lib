@@ -1,7 +1,7 @@
 #ifndef __C_CONCOLE_HEADER___
 #define __C_CONCOLE_HEADER___
 
-#ifndef __CCONSOLE_TEST___
+#ifdef __CCONSOLE_COMMENT_LIB___
 #pragma comment(lib,"CConsole.lib")
 #endif
 
