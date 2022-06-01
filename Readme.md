@@ -110,9 +110,15 @@ Option `-l` is used to specify `.lib` file, `-L` is used to specify the path con
 + `BOOL isKeyToggled(KeyType key)`
 + `int getPressedKey()`
 + `TextUi* readTextUi(const char* filepath)`
++ `TextUi* copyTextUi(const TextUi* ui)`
 + `BOOL saveTextUi(TextUi* ui, const char* filepath)`
 + `void drawTextUi(TextUi* ui, CursorAnchor* anchor)`
++ `TextUi* rotateTextUi(TextUi* ui, BOOL clockwise)`
++ `void flipTextUi(TextUi* ui, BOOL vertical)`
 + `void deleteTextUi(TextUi* ui)`
++ `TextUiShape* getTextUiShape(TextUiShape* shape, TextUi* ui)`
++ `TextUiShape* copyTextUiShape(TextUiShape* shape)`
++ `void deleteTextUiShape(TextUiShape* shape)`
 
 ### Basic Control
 
@@ -322,7 +328,13 @@ To make a text file usable for Text UI, `linebreaks` MUST be `LF`.
   typedef struct __ASCII_SIMPLE_TEXT_UI TextUi
   ```
 
-  Defines the instance of Text UI.
+  Defines the type of Text UI.
+
++ ```c
+  typedef struct ___ASCII_TEXT_UI_SHAPE TextUiShape
+  ```
+
+  Defines the type of the shape of Text UI. It contains a 2D `BYTE` array, and uses `1` for non empty characters, `0` for empty characters.
 
 + ```c
   TextUi* readTextUi(const char* filepath)
@@ -331,6 +343,14 @@ To make a text file usable for Text UI, `linebreaks` MUST be `LF`.
   Read file from `filepath` and create a `TextUi` instance.
 
   If read is failed, return `NULL`.
+
++ ```c
+  TextUi* copyTextUi(const TextUi* ui)
+  ```
+
+  Create a `TextUi` instance from a existing one.
+
+  Return `NULL` if `ui` is `NULL`.
 
 + ```c
   BOOL saveTextUi(TextUi* ui, const char* filepath)
@@ -349,10 +369,48 @@ To make a text file usable for Text UI, `linebreaks` MUST be `LF`.
   After draw completes, the cursor stays at the end of `ui`, but `anchor` will not be changed.
 
 + ```c
+  TextUi* rotateTextUi(TextUi* ui, BOOL clockwise)
+  ```
+
+  Rotate `TextUi` relative to its upper left.
+
+  If `clockwilse` is `FALSE`, rotate counterclockwise.
+
++ ```c
+  TextUi* flipTextUi(TextUi* ui, BOOL vertical)
+  ```
+
+  Flip `TextUi`.
+
+  If `vertical` is `FALSE`, flip horizontally.
+
++ ```c
   void deleteTextUi(TextUi* ui)
   ```
 
   Delete `TextUi` instance, free memory of its data.
+  
++ ```c
+  TextUiShape* getTextUiShape(TextUiShape* shape, TextUi* ui)
+  ```
+
+  Create or update a `TextUiShape` instance from an existing `TextUi`.
+
+  If `shape` is `NULL`, create a new instance, otherwise update the existing `TextUiShape`.
+
++ ```c
+  TextUiShape* copyTextUiShape(TextUiShape* shape)
+  ```
+
+  Create a `TextUiShape` instance from an existing `TextUiShape`.
+
+  If `shape` is `NULL`, return `NULL`;
+
++ ```c
+  void deleteTextUiShape(TextUiShape* shape)
+  ```
+
+  Delete `TextUiShape` instance and free memory.
 
 
 
