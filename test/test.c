@@ -1,19 +1,97 @@
 #include <stdio.h>
-
-#define __CCONSOLE_TEST___
+#include <math.h>
+#include <string.h>
 #include "../CConsole.h"
 
 void demo1()
 {
+	setConsoleTitle("BMI Caculator Demo");
+	printf("BMI Caculator\n\n");
+	float height = 0.0f, weight = 0.0f;
+	printf("Input height(cm) and weight(kg): ");
+	scanf("%f %f", &height, &weight);
+	float bmi = weight * 10000.0f / (height * height);
+	printf("BMI : ");
+	setTextColor(Cyan);
+	printf("%3.1f    ", bmi);
+	resetTextAttribute(TextColor);
+	if (bmi < 18.5f) {
+		setTextColor(White);
+		printf("Undeweight\n");
+	}
+	else if (bmi >= 18.5f && bmi < 24.0f) {
+		setTextColor(Green);
+		printf("Normal\n");
+	}
+	else if (bmi >= 24.0f && bmi < 28.0f) {
+		setTextColor(Yellow);
+		printf("Overweight\n");
+	}
+	else {
+		setTextColor(Red);
+		printf("Obese\n");
+	}
+	resetTextAttribute(TextColor | BackgroundColor);
+	pauseConsole("\nPress Any Key to Return to Main Menu.");
+}
+
+void demo2()
+{
+#define KeyCase(c) case c: strcpy(chs, #c);
+	setConsoleTitle("Keyboard Event Demo");
+	printf("Try to press a Key.\n");
 	int flag = 1;
-	TextUi* map = readTextUi("demo1_map.txt");
-	TextUi* block = readTextUi("demo1_block.txt");
+	while (flag)
+	{
+		char chs[20] = { 0 };
+		int ch = getPressedKey();
+		if (ch >= 32 && ch <= 126)
+			printf("%6c - %d\n", ch, ch);
+		else
+		{
+			switch (ch)
+			{
+			KeyCase(ESC)
+				flag = 0;
+				break;
+			KeyCase(TAB)	break;
+			KeyCase(CAP)	break;
+			KeyCase(Space)	break;
+			KeyCase(LShift)	break;
+			KeyCase(RShift)	break;
+			KeyCase(LAlt)	break;
+			KeyCase(RAlt)	break;
+			KeyCase(LCtrl)	break;
+			KeyCase(RCtrl)	break;
+			KeyCase(Up)		break;
+			KeyCase(Down)	break;
+			KeyCase(Left)	break;
+			KeyCase(Right)	break;
+			default:
+				break;
+			}
+			printf("%s - %d\n", chs, ch);
+		}
+		Sleep(100);
+	}
+	CLEAR_BUFFER();
+	printf("Returning to main menu.");
+	Sleep(3000);
+#undef KeyCase
+}
+
+void demo3()
+{
+	int flag = 1;
+	TextUi* map = readTextUi("demo3_map.txt");
+	TextUi* block = readTextUi("demo3_block.txt");
 	TextUiShape* blockshape = getTextUiShape(NULL, block);
 	CursorAnchor anchor_map = createCursorAnchor(0, 0);
 	CursorAnchor anchor_block = createCursorAnchor(4, 3);
-	// setCursorVisible(FALSE);
+	setCursorVisible(FALSE);
+	setConsoleTitle("Tetris FrameWork Demo");
 	while (flag)
-	{
+	{ 
 		drawTextUi(map, &anchor_map);
 		printf("\n");
 		moveCursor(0, -4);
@@ -62,23 +140,16 @@ void demo1()
 	
 	deleteTextUi(map);
 	deleteTextUi(block);
-	map = NULL;
-}
+	deleteTextUiShape(blockshape);
 
-void demo2()
-{
-	
-}
-
-void demo3()
-{
-	
+	setCursorVisible(TRUE);	
 }
 
 int main(int argc, char** argv)
 {
 	void (*demo[])() = { demo1, demo2, demo3 };
 	initConsole();
+	setConsoleTitle("C Console Lib Demo");
 	TextUi* menu = readTextUi("menu.txt");
 
 	while (1)
@@ -91,11 +162,10 @@ int main(int argc, char** argv)
 			clearConsole();
 			demo[choice - 1]();
 			clearConsole();
+			setConsoleTitle("C Console Lib Demo");
 		}
 		else
 			break;
 	}
-	
-
 	return 0;
 }
