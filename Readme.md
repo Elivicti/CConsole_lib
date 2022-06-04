@@ -91,7 +91,7 @@ Option `-l` is used to specify `.lib` file, `-L` is used to specify the path con
 ### List of Functions
 
 + `void initConsole()`
-+ `void setTitle(const char* title)`
++ `void setConsoleTitle(const char* title)`
 + `void setCursorVisible(BOOL visible)`
 + `void clearConsole()`
 + `CursorAnchor createCursorAnchor(SHORT x, SHORT y)`
@@ -129,7 +129,7 @@ Option `-l` is used to specify `.lib` file, `-L` is used to specify the path con
   This function is used to get console handle, thus it must be called before all other functions are called.
 
 + ```c
-  void setTitle(const char* title)
+  void setConsoleTitle(const char* title)
   ```
 
   Set the title of the console.
