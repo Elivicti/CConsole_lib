@@ -100,8 +100,8 @@ void moveCursor(SHORT dx, SHORT dy)
 	SetConsoleCursorPosition(hStdConsole, c);
 }
 
-void setTextColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, txt = col); }
-void setTextBackgroundColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, bg = (col << 4)); }
+void setTextColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, (txt = col) | bg); }
+void setTextBackgroundColor(StdColor col) { SetConsoleTextAttribute(hStdConsole, txt | (bg = (col << 4))); }
 void setTextAttribute(StdColor textColor, StdColor bgColor) { SetConsoleTextAttribute(hStdConsole, (txt = textColor) | (bg = (bgColor << 4))); }
 void resetTextAttribute(TextAttributeType attri)
 {
