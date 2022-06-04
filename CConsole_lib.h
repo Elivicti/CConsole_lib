@@ -85,7 +85,7 @@ typedef enum __STD_KEY_TYPE
 /** @brief Init console handle, must be called before other functions are called. */
 void initConsole();
 /** @brief Set the title of the console. */
-void setTitle(const char* title);
+void setConsoleTitle(const char* title);
 /** @brief Set the cursor's visibility. */
 void setCursorVisible(BOOL visible);
 /** @brief Clear console and reset cursor to the upper left. */

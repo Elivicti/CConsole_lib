@@ -48,7 +48,7 @@ void free2dBYTE(BYTE** data, DWORD rowCnt)
 }
 
 void initConsole() { hStdConsole = GetStdHandle(STD_OUTPUT_HANDLE); }
-void setTitle(const char* title) { SetConsoleTitle(title); }
+void setConsoleTitle(const char* title) { SetConsoleTitle(title); }
 void setCursorVisible(BOOL visible)
 {
 	CONSOLE_CURSOR_INFO cursor_info = {1, visible};
