@@ -134,7 +134,7 @@ BOOL isKeyPressed(KeyType key) { return (GetKeyState(key) & 0x8000); }
 BOOL isKeyToggled(KeyType key) { return (GetKeyState(key) & 0x01); }
 int getPressedKey()
 {
-	static SHORT keys[] = {ESC, TAB, CAP, Space, LShift, Rshift, LAlt, RAlt, LCtrl, RCtrl, Up, Down, Left, Right};
+	static SHORT keys[] = {ESC, TAB, CAP, Space, LShift, RShift, LAlt, RAlt, LCtrl, RCtrl, Up, Down, Left, Right};
 	BOOL vk_flag = FALSE;
 	int i = 0;
 	while (TRUE)

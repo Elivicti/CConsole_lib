@@ -68,7 +68,7 @@ typedef enum __STD_KEY_TYPE
 	// SHIFT
 	Shift	= VK_SHIFT,
 	LShift	= VK_LSHIFT,
-	Rshift	= VK_RSHIFT,
+	RShift	= VK_RSHIFT,
 	// ALT
 	Alt		= VK_MENU,
 	LAlt	= VK_LMENU,
