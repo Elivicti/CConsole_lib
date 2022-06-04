@@ -20,12 +20,14 @@ And it's also my final homework of C language class.
 
 2. Run `build.bat`, and it will automatically build and generate a `CConsole.lib` file under `.\build\` folder.
 
+   _NOTE_: `build.bat` uses `gcc` compiler. Please make sure it's properly installed.
+   
    ```powershell
    .\build.bat
    ```
 
    `build.bat` also provide a convenient functionality to run a quick test.
-
+   
    + `.\build.bat test` will build and compile source file under `.\test`
    + `.\build.bat test -r` will build, compile source file under `.\test`, and run `test.exe`
    
