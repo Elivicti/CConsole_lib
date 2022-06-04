@@ -10,7 +10,6 @@ extern "C" {
 #include <ctype.h>
 // #include <stdarg.h>
 
-#define CLEAR_BUFF() {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
 #define PERR(bSuccess, api)  {if (!(bSuccess)) printf("%s:Error %d from %s on line %d\n", __FILE__, GetLastError(), api, __LINE__);}
 
 HANDLE hStdConsole = NULL;

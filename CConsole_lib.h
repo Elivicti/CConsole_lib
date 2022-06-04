@@ -11,6 +11,8 @@ extern "C" {
 
 #include <Windows.h>
 
+#define CLEAR_BUFFER() {int __ch; while ((__ch = getchar()) != EOF && __ch != '\n');}
+
 /** @brief Cursor anchor. Defines the coordinate of the console cursor */
 typedef struct __C_Console_Cursor_Anchor
 {
