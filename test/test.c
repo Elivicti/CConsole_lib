@@ -70,7 +70,7 @@ void demo2()
 			default:
 				break;
 			}
-			printf("%s - %d\n", chs, ch);
+			printf("%6s - %d\n", chs, ch);
 		}
 		Sleep(100);
 	}
