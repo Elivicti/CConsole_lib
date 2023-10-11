@@ -1,4 +1,4 @@
-#include "CConsole_lib.h"
+#include "../include/CConsole_lib.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,7 +160,7 @@ TextUi* readTextUi(const char* filepath)
 	FILE* fp = fopen(filepath, "rt");
 	if (fp == NULL)
 	{
-		perror("Failed to open file.");
+		perror(filepath);
 		return NULL;
 	}
 
@@ -222,7 +222,7 @@ BOOL saveTextUi(TextUi* ui, const char* filepath)
 	FILE* fp = fopen(filepath, "wt+");
 	if (fp == NULL)
 	{
-		perror("Failed to open file.");
+		perror(filepath);
 		return FALSE;
 	}
 

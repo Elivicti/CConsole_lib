@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include "../CConsole.h"
+#include "../include/CConsole.h"
 
 void demo1()
 {
@@ -83,8 +83,8 @@ void demo2()
 void demo3()
 {
 	int flag = 1;
-	TextUi* map = readTextUi("demo3_map.txt");
-	TextUi* block = readTextUi("demo3_block.txt");
+	TextUi* map = readTextUi("res/demo3_map.txt");
+	TextUi* block = readTextUi("res/demo3_block.txt");
 	TextUiShape* blockshape = getTextUiShape(NULL, block);
 	CursorAnchor anchor_map = createCursorAnchor(0, 0);
 	CursorAnchor anchor_block = createCursorAnchor(4, 3);
@@ -148,10 +148,13 @@ void demo3()
 int main(int argc, char** argv)
 {
 	void (*demo[])() = { demo1, demo2, demo3 };
+	
 	initConsole();
 	setConsoleTitle("C Console Lib Demo");
-	TextUi* menu = readTextUi("menu.txt");
-
+	TextUi* menu = readTextUi("res/menu.txt");
+	if (menu == NULL)
+		return 1;
+	clearConsole();
 	while (1)
 	{
 		drawTextUi(menu, NULL);
